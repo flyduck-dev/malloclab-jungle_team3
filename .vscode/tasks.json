@@ -1,0 +1,77 @@
+//https://mannahjjang.tistory.com/31
+// {
+// 	"version": "2.0.0",
+// 	"tasks": [
+// 		{
+// 			"type": "cmake",
+// 			"label": "CMake: configure",
+// 			"command": "configure",
+// 			"problemMatcher": [],
+// 			"detail": "CMake template configure task",
+// 			"group": {
+// 				"kind": "build",
+// 				"isDefault": true
+// 			}
+// 		}
+// 	]
+// }
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "build",
+            "command": "make",
+            "args": [
+                "mdriver"
+                // "-fdiagnostics-color=always",
+                // "-g",
+                // "${file}",
+                // "-o",
+                // "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "디버거에서 생성된 작업입니다."
+        }
+		,
+		{
+			"type": "shell",
+			"label": "gcc.exe build active file",
+			"command": "gcc",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}.exe"
+			],
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Run",
+			"command": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		}
+    ],
+    "version": "2.0.0"
+}
