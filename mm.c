@@ -52,8 +52,17 @@ void mm_free(void *ptr);
 void *mm_realloc(void *ptr, size_t size);
 void remove_from_freelist(void *bp);
 void add_free_block(void *bp, size_t size);
+static int find_index(size_t size);
 
 // mm_init - initialize the malloc package.
+static int find_index(size_t size) {
+    int index = 0;
+    while (index < LISTLIMIT - 1 && size > 1) {
+        size >>= 1;
+        index++;
+    }
+    return index;
+}
 
 int mm_init(void)
 {
@@ -90,41 +99,6 @@ static void *extend_heap(size_t words){
     return coalesce(bp);
 }
 
-static void *find_fit(size_t size){
-    void *bp; 
-    /* IMPLICIT */
-    // for (bp = free_listp; GET_SIZE(HDRP(bp)) > 0; bp= NEXT_BLKP(bp)){
-    //     if (!GET_ALLOC(HDRP(bp))&& (size <= GET_SIZE(HDRP(bp)))){
-    //         return bp;
-    //     }
-    // }
-    /* LIFO & SBA */
-    // for (bp = free_listp; GET_ALLOC(HDRP(bp)) != 1; bp = NEXT_FREE_BLKP(bp))
-    // {
-    //     if (size <= GET_SIZE(HDRP(bp)))
-    //     {
-    //         return bp;
-    //     }
-    // }
-    // return NULL;
-
-    int list = 0;
-    size_t searchsize = size;
-
-    while (list < LISTLIMIT){
-        if ((list == LISTLIMIT - 1) || (searchsize <= 1) && (segregation_list[list] != NULL)){
-            bp = segregation_list[list];
-            while((bp != NULL) && (size > GET_SIZE(HDRP(bp)))){
-                bp = NEXT_FREE_BLKP(bp);
-            }
-            if (bp != NULL) return bp;
-        }
-        searchsize >>= 1;
-        list++;
-    }
-    return NULL;
-}
-
 static void place(void *bp, size_t asize){
     size_t csize = GET_SIZE(HDRP(bp));
     remove_from_freelist(bp);
@@ -142,6 +116,23 @@ static void place(void *bp, size_t asize){
         PUT(FTRP(bp), PACK(csize, 1));
     }
 }
+
+static void *find_fit(size_t size) {
+    void *bp;
+    int list = find_index(size);
+
+    for (; list < LISTLIMIT; list++) {
+        bp = segregation_list[list];
+        while (bp != NULL && size > GET_SIZE(HDRP(bp))) {
+            bp = NEXT_FREE_BLKP(bp);
+        }
+        if (bp != NULL) {
+            return bp;
+        }
+    }
+    return NULL;
+}
+
 
 void *mm_malloc(size_t size)
 {
