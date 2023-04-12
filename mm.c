@@ -158,27 +158,9 @@ void *mm_malloc(size_t size)
 }
 
 void add_free_block(void *bp, size_t size){
-    /* LIFO */
-    // NEXT_FREE_BLKP(bp) = free_listp;
-    // PREV_FREE_BLKP(bp) = NULL;
-    // PREV_FREE_BLKP(free_listp) = bp;
-    // free_listp = bp;
-
-    int list = 0;
+    int list = find_index(size);
     void *search_ptr;
     void *insert_ptr = NULL;
-
-    //먼저 블록의 크기를 기반으로 리스트 번호(list)를 결정합니다. 
-    while((list < LISTLIMIT-1) && (size >1)){
-        size >>= 1;
-        list++;
-    }
-
-    //새로운 블록이 리스트에 추가될 때는 LIFO 방식으로 추가됩니다
-    //이전에 추가된 블록은 리스트의 맨 앞에 위치하고,
-    //새로운 블록은 이전에 추가된 블록 앞에 위치합니다.
-    //새로운 블록의 NEXT_FREE_BLKP 포인터는 이전에 추가된 블록을 가리키고
-    //이전에 추가된 블록의 PREV_FREE_BLKP 포인터는 새로운 블록을 가리키게 됩니다.
 
     search_ptr = segregation_list[list];
 
